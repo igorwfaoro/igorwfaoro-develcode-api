@@ -59,8 +59,11 @@ export class UserService {
 
     public async create(input: UserInputModel, profileImageFile?: any): Promise<UserViewModel> {
 
+        if ((await this.codeExists(input.code)).exists)
+            throw new AlreadyExistsException('Code already exists');
+
         const user = User.createModel({
-            code: input.code,
+            code: input.code.toUpperCase(),
             name: input.name,
             birthDate: moment.utc(input.birthDate).toDate(),
         });
@@ -92,7 +95,7 @@ export class UserService {
         if ((await this.codeExists(input.code, input.id)).exists)
             throw new AlreadyExistsException('Code already exists');
 
-        user.code = input.code;
+        user.code = input.code.toUpperCase();
         user.name = input.name;
         user.birthDate = moment.utc(input.birthDate).toDate();
 
@@ -125,7 +128,9 @@ export class UserService {
     public async codeExists(code: string, userId?: number): Promise<{ exists: boolean }> {
 
         const user = await User.findOne({
-            where: { code }
+            where: {
+                code: { [Op.like]: code }
+            }
         });
 
         if (!user)

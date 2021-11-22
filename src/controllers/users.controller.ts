@@ -62,7 +62,7 @@ UsersController.get('/:id', async (req: Request, res: Response, next: NextFuncti
 
 UsersController.get('/codeExists/:code', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await userService.codeExists(req.params.code);
+        const result = await userService.codeExists(req.params.code, req.query.userId ? Number(req.query.userId) : null);
         res.json(result);
     } catch (error) {
         next(error);
