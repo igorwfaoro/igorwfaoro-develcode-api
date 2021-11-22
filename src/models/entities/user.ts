@@ -11,13 +11,13 @@ export class User extends Entity<User> {
     public static createModel(input: {
         code: string;
         name: string;
-        birthday: Date;
+        birthDate: Date;
     }): User {
         const user = new User(input as any);
 
         user.code = input.code;
         user.name = input.name;
-        user.birthday = input.birthday;
+        user.birthDate = input.birthDate;
 
         return user;
     }
@@ -34,15 +34,10 @@ export class User extends Entity<User> {
     @AllowNull(false)
     @Unique
     @Column
-    public birthday: Date;
+    public birthDate: Date;
 
     @Column
     public profileImage?: string;
-
-    @AllowNull(false)
-    @Default(true)
-    @Column
-    public isActive: boolean;
 
     @AllowNull(false)
     @CreatedAt
@@ -57,6 +52,8 @@ export class User extends Entity<User> {
     public getProfileImageUrl(): string {
         if (!this.profileImage)
             return this.getAvatarImageNameInitials(this.name || 'user');
+        else if (this.profileImage.startsWith('http'))
+            return this.profileImage;
         else
             return FileService.getPublicUrl(this.profileImage);
     }

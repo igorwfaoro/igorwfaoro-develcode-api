@@ -33,18 +33,13 @@ export class UserService {
             });
         }
 
-        if (filter.onlyActives === true) {
-            whereAnd.push({
-                isActive: true
-            });
-        }
-
         const users: User[] = await User.findAll({
             where: {
                 [Op.and]: whereAnd
             },
             limit,
-            offset
+            offset,
+            order: [['createdAt', 'DESC']]
         });
 
         return users.map(UserViewModel.fromEntity);
@@ -67,7 +62,7 @@ export class UserService {
         const user = User.createModel({
             code: input.code,
             name: input.name,
-            birthday: moment.utc(input.birthday).toDate(),
+            birthDate: moment.utc(input.birthDate).toDate(),
         });
 
         if (!user)
@@ -99,10 +94,7 @@ export class UserService {
 
         user.code = input.code;
         user.name = input.name;
-        user.birthday = moment.utc(input.birthday).toDate();
-
-        if (input.isActive !== undefined)
-            user.isActive = input.isActive;
+        user.birthDate = moment.utc(input.birthDate).toDate();
 
         if (profileImageFile) {
 
@@ -115,6 +107,7 @@ export class UserService {
 
         if (input.removeProfileImage && user.profileImage) {
             this._fileService.deleteFile(user.profileImage);
+            user.profileImage = null;
         }
 
         await user.save();
@@ -122,13 +115,12 @@ export class UserService {
         return UserViewModel.fromEntity(user);
     }
 
-    public async remove(id: number): Promise<void> {
+    public async delete(id: number): Promise<void> {
 
         await User.destroy({
             where: { id }
         });
     }
-
 
     public async codeExists(code: string, userId?: number): Promise<{ exists: boolean }> {
 

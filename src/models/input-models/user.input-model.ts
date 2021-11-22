@@ -3,8 +3,7 @@ export interface UserInputModel {
     id?: number;
     code: string;
     name: string;
-    birthday: string;
+    birthDate: string;
 
-    isActive?: boolean;
     removeProfileImage?: boolean;
 }
