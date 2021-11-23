@@ -68,9 +68,6 @@ export class UserService {
             birthDate: moment.utc(input.birthDate).toDate(),
         });
 
-        if (!user)
-            throw new NotFoundException('User not found');
-
         if (profileImageFile) {
             const fileName = this._fileService.saveFile(profileImageFile);
             user.profileImage = fileName;
