@@ -15,8 +15,17 @@ export class FileService {
     }
 
     public deleteFile(fileName: string): void {
-        fs.unlinkSync(`${process.cwd()}/${CONFIG.FILES_DIR}/${fileName}`);
+
+        const path = `${process.cwd()}/${CONFIG.FILES_DIR}/${fileName}`;
+
+        if (this.fileExists(path))
+            fs.unlinkSync(path);
     }
+
+    public fileExists(fileName: string): boolean {
+        return fs.existsSync(fileName);
+    }
+
     public static getPublicUrl(fileName: string): string {
         return `${CONFIG.PUBLIC_ADDRESS}/${CONFIG.FILES_DIR}/${fileName}`;
     }
